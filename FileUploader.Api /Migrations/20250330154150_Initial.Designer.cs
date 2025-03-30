@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileUploader.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250330131218_filefolder")]
-    partial class filefolder
+    [Migration("20250330154150_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

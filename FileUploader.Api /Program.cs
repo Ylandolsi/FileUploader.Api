@@ -2,6 +2,8 @@ using CloudinaryDotNet;
 using FileUploader.Api.Database;
 using FileUploader.Api.Extensions;
 using FileUploader.Api.Infrastructure;
+using FileUploader.Api.Middleware;
+using FileUploader.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -9,23 +11,25 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSwaggerGenWithAuth();
 builder.Services.AddDbContext<ApplicationDbContext>(o =>
-    o.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    o.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+        .AddInterceptors(new UserSaveInterceptor()) );  // for creating root folder for new users
 
+
+        
 builder.Services.AddSingleton<PasswordHasher>();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<AuthService>();
-
+builder.Services.AddScoped<UploadService>();
+builder.Services.AddScoped<FolderService>();
 
 builder.Services.AddAuthorization();
 builder.AddAuth();
 
 
 
-var cloudinaryUrl = builder.Configuration.GetConnectionString("CLOUDINARY_URL");
-var cloudinaryAccount = new Account(cloudinaryUrl);
-var cloudinary = new Cloudinary(cloudinaryAccount);
-builder.Services.AddSingleton(cloudinary);
+
+builder.ConfigureCloudinary();
 
 
 builder.Services.AddCorsPolicy();
@@ -41,6 +45,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseGlobalExceptionHandler();
 
 app.UseCors("AllowSpecificOrigins");
 app.UseAuthentication();

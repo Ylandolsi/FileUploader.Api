@@ -1,5 +1,6 @@
 namespace FileUploader.Api.Extensions;
 using System.Text;
+using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -54,7 +55,7 @@ public  static class ServiceCollectionExtensions
                 builder =>
                 {
                     builder.WithOrigins(
-                            "http://localhost:5173",      
+                            "http://localhost:5072",      
                             "http://localhost:5080"  )  
                         .AllowAnyHeader()
                         .AllowAnyMethod();
@@ -77,5 +78,32 @@ public  static class ServiceCollectionExtensions
                     ClockSkew = TimeSpan.Zero
                 };
             });
+    }
+
+    internal static void ConfigureCloudinary ( this WebApplicationBuilder builder){
+        Account cloudinaryAccount;
+        try{
+            var cloudName = builder.Configuration["Cloudinary:CloudName"];
+            var apiKey = builder.Configuration["Cloudinary:ApiKey"];
+            var apiSecret = builder.Configuration["Cloudinary:ApiSecret"];
+
+            if (string.IsNullOrEmpty(cloudName) || string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
+            {
+                throw new Exception("Missing required Cloudinary configuration values");
+            }
+
+            cloudinaryAccount = new Account(
+                cloud: cloudName,
+                apiKey: apiKey,
+                apiSecret: apiSecret
+            );
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to parse Cloudinary URL: {ex.Message}");
+        }
+        var cloudinary = new Cloudinary(cloudinaryAccount);
+        builder.Services.AddSingleton(cloudinary);
+
     }
 }
