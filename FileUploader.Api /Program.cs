@@ -20,7 +20,8 @@ builder.Services.AddSingleton<PasswordHasher>();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<RefreshService>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<UploadService>();
+builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<CloudinaryService>();
 builder.Services.AddScoped<FolderService>();
 
 builder.Services.AddAuthorization();
@@ -47,7 +48,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseGlobalExceptionHandler();
 
+
 app.UseCors("AllowSpecificOrigins");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();

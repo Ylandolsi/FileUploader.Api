@@ -2,6 +2,7 @@ using FileUploader.Api.Dtos;
 using FileUploader.Api.Infrastructure;
 using FileUploader.Api.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileUploader.Api.Controllers;

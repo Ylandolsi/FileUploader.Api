@@ -51,7 +51,7 @@ public  static class ServiceCollectionExtensions
     {
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowSpecificOrigins",
+            options.AddPolicy("DefaultPolicy",
                 builder =>
                 {
                     builder.WithOrigins(
@@ -60,6 +60,7 @@ public  static class ServiceCollectionExtensions
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });
+
         });
 
     }

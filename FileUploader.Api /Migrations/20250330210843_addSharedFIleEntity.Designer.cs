@@ -3,6 +3,7 @@ using System;
 using FileUploader.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileUploader.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250330210843_addSharedFIleEntity")]
+    partial class addSharedFIleEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,16 +103,17 @@ namespace FileUploader.Api.Migrations
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("FileId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SharedBy")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.HasKey("Token");
+
+                    b.HasIndex("FileId");
 
                     b.ToTable("SharedFiles");
                 });
@@ -200,6 +204,17 @@ namespace FileUploader.Api.Migrations
                     b.Navigation("ParentFolder");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FileUploader.Api.Models.SharedFile", b =>
+                {
+                    b.HasOne("FileUploader.Api.Models.FileItem", "File")
+                        .WithMany()
+                        .HasForeignKey("FileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("File");
                 });
 
             modelBuilder.Entity("FileUploader.Api.Models.UserRefreshToken", b =>

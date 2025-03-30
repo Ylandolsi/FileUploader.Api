@@ -19,4 +19,6 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Folder> Folders { get; set; } = null!;
     public DbSet<FileItem> Files { get; set; } = null!;
+
+    public DbSet<SharedFile> SharedFiles { get; set; } = null!;
 }

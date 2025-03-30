@@ -1,8 +1,10 @@
+using System.IO.Compression;
 using FileUploader.Api.Dtos;
 using FileUploader.Api.Exceptions;
 using FileUploader.Api.Models;
 using FileUploader.Api.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileUploader.Api.Controllers;
@@ -12,6 +14,7 @@ using JWTClaims = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 using InvalidOperationException = Exceptions.InvalidOperationException;
 [ApiController]
 [Route("api/[controller]")]
+
 public class FolderController : ControllerBase
 {
     private readonly FolderService _folderService;
@@ -104,6 +107,7 @@ public class FolderController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
 
 
 }

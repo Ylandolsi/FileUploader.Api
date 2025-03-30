@@ -143,4 +143,33 @@ public class FolderService
         path.Reverse();
         return path;
     }
+
+
+    public async Task<IEnumerable<FileItemDto>> GetFilesInFolder(int folderId, string userName)
+    {
+        var folder = await _context.Folders
+            .FirstOrDefaultAsync(f => f.Id == folderId && f.Username == userName);
+
+        if (folder == null)
+        {
+            throw new NotFoundException("Folder not found or you don't have permission to access it.");
+        }
+
+
+        var files = await _context.Files
+            .Where(f => f.FolderId == folderId && f.Username == userName)
+            .Select(f => new FileItemDto
+            {
+                Id = f.Id,
+                Name = f.Name,
+                Size = f.Size,
+                Url = f.Url,
+                CreatedAt = f.CreatedAt,
+                FolderId = f.FolderId
+            })
+            .ToListAsync();
+
+        return files ;
+    }
+
 }
