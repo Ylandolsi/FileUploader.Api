@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FileUploader.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250329212738_Initial")]
+    [Migration("20250330001319_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

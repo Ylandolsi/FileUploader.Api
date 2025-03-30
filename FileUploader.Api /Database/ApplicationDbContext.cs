@@ -16,4 +16,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<UserRefreshToken> RefreshTokens { get; set; } = null!;  
+
+    public DbSet<Folder> Folders { get; set; } = null!;
+    public DbSet<FileItem> Files { get; set; } = null!;
 }

@@ -1,3 +1,4 @@
+using CloudinaryDotNet;
 using FileUploader.Api.Database;
 using FileUploader.Api.Extensions;
 using FileUploader.Api.Infrastructure;
@@ -18,6 +19,13 @@ builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddAuthorization();
 builder.AddAuth();
+
+
+
+var cloudinaryUrl = builder.Configuration.GetConnectionString("CLOUDINARY_URL");
+var cloudinaryAccount = new Account(cloudinaryUrl);
+var cloudinary = new Cloudinary(cloudinaryAccount);
+builder.Services.AddSingleton(cloudinary);
 
 
 builder.Services.AddCorsPolicy();
