@@ -31,8 +31,9 @@ public class FileController : ControllerBase{
 
 
     [HttpPost("upload")]
-    [Authorize]
-    public async Task<IActionResult> Upload(IFormFile file, int folderId)
+    [Authorize] 
+    // from form => multipart/form-data 
+    public async Task<IActionResult> Upload([FromForm]IFormFile file,[FromForm] int folderId)
     {
         if (folderId <= 0) 
             return BadRequest(new { message = "Invalid folder ID" });
