@@ -59,7 +59,7 @@ public class AuthService {
             throw new InvalidOperationException("Invalid username or password");
         }
 
-        Tokens tokens = _tokenService.Create(user);
+        Tokens tokens = _tokenService.Create(requestLogin.Username);
 
 
         var refreshTokenExpiry =   DateTime.UtcNow.Add(_refreshTokenLifetime);

@@ -17,7 +17,7 @@ public class TokenService
         this.configuration = configuration;
     }
 
-    public Tokens Create(User user)
+    public Tokens Create(string username)
     {
         string secretKey = configuration["Jwt:Secret"]!;
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
@@ -25,7 +25,7 @@ public class TokenService
 
         var claims = new[]
         {
-            new Claim(JWTClaims.Name, user.Username),
+            new Claim(JWTClaims.Name, username),
         };
 
         var tokenDescriptor = new SecurityTokenDescriptor

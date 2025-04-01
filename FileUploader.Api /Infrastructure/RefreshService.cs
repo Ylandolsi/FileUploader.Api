@@ -30,7 +30,6 @@ public class RefreshService
             try
             {
                 var existingToken = await _context.RefreshTokens
-                    .Include(rt => rt.User)
                     .FirstOrDefaultAsync(rt => 
                         rt.UserName == refreshTokenRequest.UserName && 
                         rt.RefreshToken == refreshTokenRequest.RefreshToken);
@@ -53,17 +52,12 @@ public class RefreshService
 
                 _context.RefreshTokens.Remove(existingToken);
 
-                var user = existingToken.User;
-                if (user == null)
-                {
-                    throw new InvalidOperationException("User not found.");
-                }
 
-                var tokens = _tokenService.Create(user);
+                var tokens = _tokenService.Create(refreshTokenRequest.UserName);
 
                 await _context.RefreshTokens.AddAsync(new UserRefreshToken
                 {
-                    UserName = user.Username,
+                    UserName = refreshTokenRequest.UserName,
                     RefreshToken = tokens.RefreshToken,
                     Expires = DateTime.UtcNow.Add(_refreshTokenLifetime),
                     IsActive = true
