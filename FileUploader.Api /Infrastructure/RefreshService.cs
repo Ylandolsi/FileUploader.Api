@@ -10,7 +10,7 @@ public class RefreshService
         private readonly ApplicationDbContext _context;
         private readonly ILogger<RefreshService> _logger;
         private readonly TokenService _tokenService;
-        private readonly TimeSpan _refreshTokenLifetime = TimeSpan.FromMinutes(5); 
+        private readonly TimeSpan _refreshTokenLifetime = TimeSpan.FromDays(7); 
 
         public RefreshService(
             ApplicationDbContext context,
