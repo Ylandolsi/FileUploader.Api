@@ -29,7 +29,6 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("refresh-token")]
-    [Authorize]
     public async Task<IActionResult> RefreshToken(RefreshTokenDto refreshTokenRequest)
     {
         try
