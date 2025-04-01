@@ -10,7 +10,7 @@ public class FolderConfig : IEntityTypeConfiguration<Folder>
 
         builder.Property(f => f.Name)
             .IsRequired()
-            .HasMaxLength(10);
+            .HasMaxLength(50);
 
         builder.HasOne(f => f.ParentFolder) 
             .WithMany(f => f.ChildFolders) 
@@ -29,5 +29,6 @@ public class FolderConfig : IEntityTypeConfiguration<Folder>
             .HasForeignKey(f => f.Username)
             .OnDelete(DeleteBehavior.Cascade);   // Delete folders when the user is deleted
 
+        
     }
 }

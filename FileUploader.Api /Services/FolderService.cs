@@ -10,24 +10,33 @@ using Microsoft.EntityFrameworkCore;
 using Folder = Models.Folder;
 public class FolderService
 {
-    private readonly Cloudinary _cloudinary;
     private readonly ILogger<FolderService> _logger;
     private readonly ApplicationDbContext _context;
 
-    public FolderService(Cloudinary cloudinary, ILogger<FolderService> logger, ApplicationDbContext context)
+    public FolderService( ILogger<FolderService> logger, ApplicationDbContext context)
     {
-        _cloudinary = cloudinary;
         _context = context;
         _logger = logger;
     }
 
-    public async Task<Folder> CreateFolder(CreateFolderDto createFolderDto, string userName)
+    public async Task<FolderDto> CreateFolder(CreateFolderDto createFolderDto, string userName)
     {
+        if (createFolderDto.ParentFolderId == null)
+        {
+            throw new InvalidOperationException("Parent folder ID is required.");
+        }
+        var parentFolder = await _context.Folders
+            .FirstOrDefaultAsync(f => f.Id == createFolderDto.ParentFolderId && f.Username == userName);
+        
+        if (parentFolder == null)
+        {
+            throw new NotFoundException("Parent folder not found or you don't have permission to access it.");
+        }
         var folder = new Folder
         {
             Name = createFolderDto.Name,
             Username = userName,
-            ParentFolderId = createFolderDto.ParentFolderId,
+            ParentFolderId = createFolderDto.ParentFolderId
         };
 
         _context.Folders.Add(folder);
@@ -40,8 +49,17 @@ public class FolderService
             _logger.LogError(ex, "Error saving folder to the database");
             throw new InvalidOperationException("An error occurred while creating the folder.");
         }
+        
 
-        return folder;
+
+        var folderDto = new FolderDto
+        {
+            Id = folder.Id,
+            Name = folder.Name,
+            ParentFolderId = folder.ParentFolderId
+        };
+
+        return folderDto;
     }
 
     public async Task DeleteFolder(int folderId, string userName)
@@ -66,7 +84,7 @@ public class FolderService
         }
     }
 
-    public async Task<FolderContentsDto> GetFolderContents(int folderId, string userName)
+    public async Task<List<FolderDto>> GetSubFolders(int folderId, string userName)
     {
         var folder = await _context.Folders
             .FirstOrDefaultAsync(f => f.Id == folderId && f.Username == userName);
@@ -82,94 +100,38 @@ public class FolderService
             {
                 Id = f.Id,
                 Name = f.Name,
+                ParentFolderId = f.ParentFolderId
             })
             .ToListAsync();
 
-        var files = await _context.Files
-            .Where(f => f.FolderId == folderId && f.Username == userName)
-            .Select(f => new FileItemDto
-            {
-                Id = f.Id,
-                Name = f.Name,
-                Size = f.Size,
-                Url = f.Url,
-                CreatedAt = f.CreatedAt,
-                FolderId = f.FolderId
-            })
-            .ToListAsync();
+        return subfolders;
+    }
 
-        return new FolderContentsDto
+
+    public async Task<List<FolderDto>> GetFoldersAtRoot()
+    {
+        // without root 
+        var folders = await _context.Folders.Where(f=> f.ParentFolderId == null ).ToListAsync();
+        
+        var ret = new List<FolderDto>();
+        foreach (var folder in folders)
         {
-            CurrentFolder = new FolderDto
+            ret.Add(new FolderDto
             {
                 Id = folder.Id,
                 Name = folder.Name,
-                ParentFolderId = folder.ParentFolderId
-            },
-            Subfolders = subfolders,
-            Files = files
-        };
-    }
-
-
-    public async Task<List<FolderDto>> GetPathToFolderOptimized(int folderId, string userName)
-    {
-        // depth 5 at max 
-        var folderWithAncestors = await _context.Folders
-            .Where(f => f.Username == userName)
-            .Include(f => f.ParentFolder.ParentFolder.ParentFolder.ParentFolder.ParentFolder)
-            .FirstOrDefaultAsync(f => f.Id == folderId);
-        
-        if (folderWithAncestors == null)
-        {
-            throw new NotFoundException("Folder not found or you don't have permission to access it.");
-        }
-        
-        var path = new List<FolderDto>();
-        var current = folderWithAncestors;
-        
-        while (current != null)
-        {
-            path.Add(new FolderDto
-            {
-                Id = current.Id,
-                Name = current.Name,
-                ParentFolderId = current.ParentFolderId
+                ParentFolderId = folder.ParentFolderId ,
+                
             });
             
-            current = current.ParentFolder;
         }
-        
-        path.Reverse();
-        return path;
+    
+        return ret;
     }
+    
+    
 
+    
 
-    public async Task<IEnumerable<FileItemDto>> GetFilesInFolder(int folderId, string userName)
-    {
-        var folder = await _context.Folders
-            .FirstOrDefaultAsync(f => f.Id == folderId && f.Username == userName);
-
-        if (folder == null)
-        {
-            throw new NotFoundException("Folder not found or you don't have permission to access it.");
-        }
-
-
-        var files = await _context.Files
-            .Where(f => f.FolderId == folderId && f.Username == userName)
-            .Select(f => new FileItemDto
-            {
-                Id = f.Id,
-                Name = f.Name,
-                Size = f.Size,
-                Url = f.Url,
-                CreatedAt = f.CreatedAt,
-                FolderId = f.FolderId
-            })
-            .ToListAsync();
-
-        return files ;
-    }
 
 }

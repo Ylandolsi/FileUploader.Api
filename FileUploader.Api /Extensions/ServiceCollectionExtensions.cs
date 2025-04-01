@@ -56,7 +56,7 @@ public  static class ServiceCollectionExtensions
                 {
                     builder.WithOrigins(
                             "http://localhost:5072",      
-                            "http://localhost:5080"  )  
+                            "http://localhost:5173")  
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                 });

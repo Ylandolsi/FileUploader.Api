@@ -166,6 +166,33 @@ public class FileController : ControllerBase{
             return StatusCode(500, new { message = "An error occurred while retrieving the shared file." });
         }
     }
+    
+    [HttpGet("folder/{folderId}")]
+    [Authorize]
+    public async Task<IActionResult> GetFolderFiles(int folderId)
+    {
+        if (folderId <= 0)
+            return BadRequest(new { message = "Invalid folder ID" });
+        var currentUsernameClaim = User.FindFirst(JWTClaims.Name);
+        if (currentUsernameClaim == null)
+            return Unauthorized(new { message = "User not authenticated" });
+        var userName = currentUsernameClaim.Value;
+
+        try
+        {
+            var result = await _fileService.GetFolderFiles(folderId, userName);
+            return Ok(result);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving folder files");
+            return StatusCode(500, new { message = "An error occurred while retrieving the folder files." });
+        }
+    }
 
 
 

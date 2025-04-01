@@ -81,9 +81,9 @@ public class FolderController : ControllerBase
         
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("subfolders/{id}")]
     [Authorize]
-    public async Task<IActionResult> GetFolderContents(int id)
+    public async Task<IActionResult> GetSubFolder(int id)
     {
         if (id <= 0)
             return BadRequest(new { message = "Invalid folder ID" });
@@ -95,17 +95,42 @@ public class FolderController : ControllerBase
 
         try
         {
-            var result = await _folderService.GetFolderContents(id, userName);
+            var result = await _folderService.GetSubFolders(id, userName);
             return Ok(result);
         }
         catch (NotFoundException ex)
         {
             return NotFound(new { message = ex.Message });
         }
-        catch (InvalidOperationException ex)
+        catch (Exception ex)
         {
             return BadRequest(new { message = ex.Message });
         }
+    }
+    
+    
+    
+    
+    
+    
+    [HttpGet("root")]
+    [Authorize]
+    public async Task<IActionResult> RootFolders()
+    {
+        var currentUsernameClaim = User.FindFirst(JWTClaims.Name); 
+        if (currentUsernameClaim == null)
+            return Unauthorized(new { message = "User not authenticated" });
+
+        try
+        {
+            var result = await _folderService.GetFoldersAtRoot();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        
     }
 
 

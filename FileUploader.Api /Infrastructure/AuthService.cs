@@ -84,5 +84,10 @@ public class AuthService {
 
         return tokens;
     }
+    
+    public async Task<bool> UserNameCheckAsync(string username)
+    {
+        return await _context.Users.AnyAsync(x => x.Username == username);
+    }
 
 }

@@ -49,7 +49,7 @@ if (app.Environment.IsDevelopment())
 app.UseGlobalExceptionHandler();
 
 
-app.UseCors("AllowSpecificOrigins");
+app.UseCors("DefaultPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

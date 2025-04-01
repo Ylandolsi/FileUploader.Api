@@ -144,4 +144,16 @@ public class AuthController : ControllerBase
             return StatusCode(500, new { message = "An unexpected error occurred during logout." });
         }
     }
+    
+    [HttpGet("check-username")]
+    
+    public async Task<IActionResult> UserNameCheck([FromQuery]string username)
+    {
+        if( username == null)
+        {
+            return BadRequest();
+        }
+        var isAvaialble = await _authService.UserNameCheckAsync(username);
+        return Ok(new {available = !isAvaialble});
+    }
 }
