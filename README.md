@@ -15,12 +15,9 @@ FileUploader.Api is a backend service that enables users to upload, organize, an
 
 - **ASP.NET Core 9.0**
 - **Entity Framework Core**
-- **PostgreSQL**information
+- **PostgreSQL**
 - **Cloudinary**
 - **JWT Authentication**
-
-```
-
 
 ## 📝 API Endpoints
 
@@ -28,21 +25,21 @@ FileUploader.Api is a backend service that enables users to upload, organize, an
 
 - `POST /api/auth/register`: Register a new user
 - `POST /api/auth/login`: Login and get JWT token
-- `POST /api/auth/refresh`: Refresh JWT token
+- `POST /api/auth/refresh-token`: Refresh JWT token
+- `GET /api/auth/check-username`: Check if username is available
 
 ### Files
 
 - `POST /api/file/upload`: Upload a file to a folder
 - `GET /api/file/download/{id}`: Download a file by ID (authenticated)
-- `GET /api/file/shared/{token}`: Download a shared file using token (anonymous)
+- `GET /api/file/download/shared/{token}`: Download a shared file using token (anonymous)
 - `POST /api/file/share/{id}`: Generate share token for a file
 - `DELETE /api/file/delete/{id}`: Delete a file
+- `GET /api/file/folder/{folderId}`: Get all files in a folder
 
 ### Folders
 
-- `POST /api/folder`: Create a new folder
-- `GET /api/folder`: Get all folders for current user
-- `GET /api/folder/{id}/files`: Get all files in a folder
+- `POST /api/folder/create`: Create a new folder
 - `DELETE /api/folder/{id}`: Delete a folder
-
-```
+- `GET /api/folder/subfolders/{id}`: Get subfolders of a specified folder
+- `GET /api/folder/root`: Get all folders at root level

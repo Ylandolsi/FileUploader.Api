@@ -108,10 +108,10 @@ public class FolderService
     }
 
 
-    public async Task<List<FolderDto>> GetFoldersAtRoot()
+    public async Task<List<FolderDto>> GetFoldersAtRoot(string username )
     {
         // without root 
-        var folders = await _context.Folders.Where(f=> f.ParentFolderId == null ).ToListAsync();
+        var folders = await _context.Folders.Where(f=> f.ParentFolderId == null && f.Username == username ).ToListAsync();
         
         var ret = new List<FolderDto>();
         foreach (var folder in folders)

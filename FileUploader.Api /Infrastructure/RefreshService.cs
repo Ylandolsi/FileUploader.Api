@@ -76,21 +76,5 @@ public class RefreshService
         }
 
     
-        public async Task<bool> DeleteRefreshTokenAsync(RefreshTokenDto refreshTokenRequest)
-        {
-            var token = await _context.RefreshTokens.FirstOrDefaultAsync(rt => 
-                rt.UserName == refreshTokenRequest.UserName && 
-                rt.RefreshToken == refreshTokenRequest.RefreshToken);
-
-            if (token == null)
-            {
-                return false;
-            }
-
-            _context.RefreshTokens.Remove(token);
-
-
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        
 }

@@ -14,16 +14,14 @@ using JWTClaims = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames;
 public class AuthController : ControllerBase
 {
     private readonly RefreshService _refreshService;
-    private readonly TokenService _tokenService;
     private readonly AuthService _authService;
     private readonly ILogger<AuthController> _logger;
     
     public AuthController(RefreshService refreshService,
-        ILogger<AuthController> logger , TokenService tokenService,
+        ILogger<AuthController> logger ,
         AuthService authService)
     {
         _refreshService = refreshService;
-        _tokenService = tokenService;
         _authService = authService;
         _logger = logger;
     }
@@ -49,33 +47,7 @@ public class AuthController : ControllerBase
     }
 
 
-    [HttpGet("validate")]
-    public IActionResult ValidateJWT()
-    {
-        var authHeader = HttpContext.Request.Headers["Authorization"].FirstOrDefault();
     
-        if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-            return Unauthorized(new { valid = false, message = "Authorization header missing or invalid." });
-    
-        var token = authHeader.Substring(7);
-    
-        try
-        {
-            var principal = _tokenService.validate(token);
-            if (principal == null)
-                return Unauthorized(new { valid = false, message = "Invalid token." });
-            
-            //var claims = principal.Claims.Select(c => new { c.Type, c.Value });
-            var username = principal.FindFirst(JWTClaims.Name)?.Value;
-            //return Ok(new { valid = true, claims });
-            
-            return Ok(new { valid = true, username });
-        }
-        catch (Exception)
-        {
-            return Unauthorized(new { valid = false, message = "Invalid token." });
-        }
-    }
     
     [HttpPost("register")]
     public async Task<IActionResult> RegisterUser(UserRegister UserReg)
@@ -117,32 +89,6 @@ public class AuthController : ControllerBase
         }
     }
 
-
-
-
-    [HttpPost("logout")]
-    public async Task<IActionResult> Logout(RefreshTokenDto refreshTokenRequest)
-    {
-        try
-        {
-            _logger.LogInformation("Logging out user");
-            var result = await _refreshService.DeleteRefreshTokenAsync(refreshTokenRequest);
-            
-            if (!result)
-            {
-                _logger.LogWarning("Token not found during logout");
-                return NotFound(new { message = "Token not found." });
-            }
-            
-            _logger.LogInformation("User logged out");
-            return Ok(new { message = "Logout successful. Client should dispose of all tokens." });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error logging out user");
-            return StatusCode(500, new { message = "An unexpected error occurred during logout." });
-        }
-    }
     
     [HttpGet("check-username")]
     

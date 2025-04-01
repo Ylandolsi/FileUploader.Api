@@ -121,9 +121,10 @@ public class FolderController : ControllerBase
         if (currentUsernameClaim == null)
             return Unauthorized(new { message = "User not authenticated" });
 
+        var userName = currentUsernameClaim.Value;
         try
         {
-            var result = await _folderService.GetFoldersAtRoot();
+            var result = await _folderService.GetFoldersAtRoot(userName);
             return Ok(result);
         }
         catch (Exception ex)
