@@ -136,7 +136,7 @@ public class FileController : ControllerBase{
 
         var url = await _fileService.DonwloadFile(id, userName);
         
-        return Ok(new { message = new { downloadurl = url } });  
+        return Ok(new { downloadurl = url  });  
     }
 
 
