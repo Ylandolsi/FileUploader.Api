@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Text.Json;
 using FileUploader.Api.Exceptions;
@@ -31,7 +32,13 @@ public class ExceptionMiddleware
 
     private async Task HandleExceptionAsync(HttpContext context, Exception ex)
     {
-        _logger.LogError(ex, ex.Message);
+        var userId = context.User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value ?? "anonymous";
+        _logger.LogError(ex, "Unhandled exception occurred. Path: {Path}, Method: {Method}, User: {User}, Query: {Query}, Message: {msg}",
+            context.Request.Path,
+            context.Request.Method,
+            userId,
+            context.Request.QueryString,
+            ex.Message);
         context.Response.ContentType = "application/json";
         
         var statusCode = HttpStatusCode.InternalServerError;
